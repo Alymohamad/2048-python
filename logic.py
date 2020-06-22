@@ -60,7 +60,7 @@ def game_state(mat):
     for i in range(len(mat)):
         for j in range(len(mat[0])):
             if mat[i][j] == 2048:
-                return 'win'
+                return 'not over'
     for i in range(len(mat)-1):
         # intentionally reduced to check the row on the right and below
         # more elegant to use exceptions but most likely this will be their solution
@@ -130,7 +130,7 @@ def transpose(mat):
 # 2 per up/down/left/right?) But if you get one correct likely to get all correct so...
 # Check the down one. Reverse/transpose if ordered wrongly will give you wrong result.
 
-
+#TODO: Vielleicht anstelle von old matrix = new_ matrix bei mir auch so ein loop machen?
 def cover_up(mat):
     new = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
     done = False
@@ -147,13 +147,17 @@ def cover_up(mat):
 
 def merge(mat):
     done = False
+    score = 0
     for i in range(4):
         for j in range(3):
             if mat[i][j] == mat[i][j+1] and mat[i][j] != 0:
                 mat[i][j] *= 2
+                score += mat[i][j]
+                # TODO HIER Funktion einfügen mit score addieren mit den neuen mat[i][j]
+                # TODO Es möglich machen zu restarten ohne die Daten zu löchen nicht hier sondern woanders
                 mat[i][j+1] = 0
                 done = True
-    return (mat, done)
+    return (mat, done, score)
 
 
 def up(game):
@@ -166,7 +170,8 @@ def up(game):
     done = done or temp[1]
     game = cover_up(game)[0]
     game = transpose(game)
-    return (game, done)
+    # temp[2] ist der score vom mergen
+    return (game, done, temp[2])
 
 
 def down(game):
@@ -178,7 +183,8 @@ def down(game):
     done = done or temp[1]
     game = cover_up(game)[0]
     game = transpose(reverse(game))
-    return (game, done)
+    # temp[2] ist der score vom mergen
+    return (game, done, temp[2])
 
 
 def left(game):
@@ -189,7 +195,8 @@ def left(game):
     game = temp[0]
     done = done or temp[1]
     game = cover_up(game)[0]
-    return (game, done)
+    # temp[2] ist der score vom mergen
+    return (game, done, temp[2])
 
 
 def right(game):
@@ -202,4 +209,5 @@ def right(game):
     done = done or temp[1]
     game = cover_up(game)[0]
     game = reverse(game)
-    return (game, done)
+    #temp[2] ist der score vom mergen
+    return (game, done, temp[2])
